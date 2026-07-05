@@ -20,7 +20,6 @@ An AI-powered QA assistant built with Streamlit that searches test cases, genera
 **Tech:** Python, Streamlit, LangChain, ChromaDB, Groq LLM, OpenAI
 
 ### [Python_Learning](./Python_Learning/)
-*(Located at the repo root, outside this folder)*
 Python fundamentals from a QA/test automation engineer's perspective — covers syntax, data types, operators, string methods, collections, naming conventions, and API testing.
 
 **Tech:** Python 3.11+, Requests
@@ -31,6 +30,7 @@ Python fundamentals from a QA/test automation engineer's perspective — covers 
 AI-Tools-_Practice/
 ├── MCP_Creation/              # FastMCP test case server
 ├── Playwright_MCP_Basics/     # Browser automation + MCP integration
+├── Python_Learning/           # Python fundamentals for QA engineers
 ├── QA Copilot/                # RAG-based AI QA assistant
 ├── testcases_vwo.csv          # 5,000+ VWO test cases (shared data)
 └── README.md
