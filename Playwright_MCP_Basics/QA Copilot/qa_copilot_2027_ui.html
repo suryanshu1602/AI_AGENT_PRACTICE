@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<title>QA Copilot 2027 — Professional Interface v2.7</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0f1419;--panel:#191d2a;--card:#212839;--border:#353c4d;
+    --accent:#00d9ff;--accent2:#a577ff;--accent3:#ff4466;
+    --text:#f1f5fb;--muted:#8b96ac;--green:#1ecb7f;--blue:#2563eb;
+    --font-main:'Inter',sans-serif;--radius-lg:16px;--radius-md:12px;--radius-sm:8px;
+  }
+  html,body{width:100%;height:100%;margin:0;padding:0}
+  body{background:linear-gradient(135deg,#0f1419 0%,#1a1426 100%);color:var(--text);font-family:var(--font-main);font-size:14px;line-height:1.5;overflow:hidden}
+  .app-container{display:grid;grid-template-columns:240px 1fr;width:100%;height:100vh}
+
+  /* ========== SIDEBAR ========== */
+  .sidebar{background:linear-gradient(180deg,var(--panel) 0%,#15191f 100%);border-right:1px solid rgba(53,60,77,0.3);display:flex;flex-direction:column;overflow-y:auto;padding:0}
+  .sidebar::-webkit-scrollbar{width:5px}
+  .sidebar::-webkit-scrollbar-thumb{background:rgba(139,150,172,0.4);border-radius:2.5px}
+  .sidebar::-webkit-scrollbar-thumb:hover{background:rgba(139,150,172,0.6)}
+
+  .sidebar-header{padding:24px 20px;border-bottom:1px solid rgba(53,60,77,0.2)}
+  .logo-group{display:flex;align-items:center;gap:12px}
+  .logo-icon{width:40px;height:40px;border-radius:var(--radius-md);background:linear-gradient(135deg,#00d9ff 0%,#a577ff 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 16px rgba(0,217,255,0.2)}
+  .logo-icon svg{width:22px;height:22px;stroke:#fff;stroke-width:2;fill:none}
+  .logo-text{font-size:16px;font-weight:700;background:linear-gradient(135deg,#00d9ff,#64f4f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .logo-tag{font-size:9px;font-weight:600;color:var(--accent);background:rgba(0,217,255,0.12);border:1px solid rgba(0,217,255,0.25);padding:3px 8px;border-radius:var(--radius-sm);margin-left:auto}
+
+  .sidebar-status{padding:12px 20px;border-bottom:1px solid rgba(53,60,77,0.2);display:flex;align-items:center;gap:8px}
+  .status-indicator{width:6px;height:6px;border-radius:50%;background:#1ecb7f;box-shadow:0 0 6px rgba(30,203,127,0.4);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  .status-text{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+
+  .sidebar-section{padding:20px 20px 12px;border-bottom:1px solid rgba(53,60,77,0.1)}
+  .section-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+
+  .mode-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mode-btn{padding:10px 8px;background:rgba(33,40,57,0.5);border:1px solid rgba(53,60,77,0.4);border-radius:var(--radius-md);cursor:pointer;color:var(--muted);font-weight:600;font-size:11px;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .mode-btn i{font-size:16px}
+  .mode-btn:hover{border-color:rgba(0,217,255,0.3);background:rgba(0,217,255,0.05);color:var(--accent)}
+  .mode-btn.active{border-color:var(--accent);background:rgba(0,217,255,0.1);color:var(--accent);box-shadow:0 0 12px rgba(0,217,255,0.15)}
+
+  .select-box{width:100%;padding:10px 12px;background:rgba(33,40,57,0.5);border:1px solid rgba(53,60,77,0.4);border-radius:var(--radius-md);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;appearance:none;transition:all 0.3s}
+  .select-box:hover{border-color:rgba(0,217,255,0.3)}
+  .select-box:focus{outline:none;border-color:var(--accent);background:rgba(0,217,255,0.05)}
+  .select-box{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b96ac' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+
+  .slider-container{margin-top:8px}
+  .slider-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px}
+  .slider-label{color:var(--muted);font-weight:600}
+  .slider-value{color:var(--accent);font-weight:700;background:rgba(0,217,255,0.1);padding:2px 8px;border-radius:4px}
+  input[type=range]{width:100%;height:3px;background:rgba(53,60,77,0.5);border:none;border-radius:2px;outline:none;accent-color:var(--accent);cursor:pointer}
+
+  .metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px}
+  .metric-card{background:rgba(33,40,57,0.3);border:1px solid rgba(53,60,77,0.3);border-radius:var(--radius-md);padding:14px;cursor:pointer;transition:all 0.3s}
+  .metric-card:hover{border-color:rgba(0,217,255,0.2);background:rgba(0,217,255,0.05)}
+  .metric-number{font-size:20px;font-weight:800;margin-bottom:4px}
+  .metric-number.cyan{color:var(--accent)}
+  .metric-number.green{color:var(--green)}
+  .metric-number.purple{color:var(--accent2)}
+  .metric-number.red{color:var(--accent3)}
+  .metric-label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+
+  .upload-box{margin:16px 20px;padding:16px;border:2px dashed rgba(0,217,255,0.3);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all 0.3s;background:rgba(0,217,255,0.02)}
+  .upload-box:hover{border-color:var(--accent);background:rgba(0,217,255,0.08)}
+  .upload-box i{font-size:24px;color:var(--muted);margin-bottom:6px;display:block;transition:all 0.3s}
+  .upload-box:hover i{color:var(--accent);transform:scale(1.1)}
+  .upload-box p{font-size:11px;color:var(--text);margin-bottom:2px;font-weight:600}
+  .upload-box span{display:block;font-size:9px;color:var(--muted)}
+
+  .ingest-button{width:calc(100% - 40px);margin:0 20px 20px;padding:12px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);border:none;border-radius:var(--radius-md);color:#fff;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.3s;box-shadow:0 6px 16px rgba(0,217,255,0.2);font-family:var(--font-main)}
+  .ingest-button:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,217,255,0.3)}
+  .ingest-button i{font-size:16px}
+
+  /* ========== MAIN CONTENT ========== */
+  .main-area{display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+
+  .top-bar{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid rgba(53,60,77,0.2);background:linear-gradient(180deg,rgba(25,29,42,0.6),rgba(25,29,42,0.3));backdrop-filter:blur(8px)}
+  .top-left{display:flex;align-items:center;gap:16px}
+  .page-heading{font-size:24px;font-weight:800;letter-spacing:-0.5px}
+  .page-heading span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .breadcrumb-text{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase}
+  .top-actions{display:flex;gap:8px}
+  .action-btn{padding:9px 11px;background:rgba(33,40,57,0.4);border:1px solid rgba(53,60,77,0.4);border-radius:var(--radius-md);color:var(--muted);font-size:16px;cursor:pointer;transition:all 0.3s}
+  .action-btn:hover{border-color:rgba(0,217,255,0.3);color:var(--accent);background:rgba(0,217,255,0.05)}
+  .clear-chat-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;background:rgba(33,40,57,0.4);border:1px solid rgba(53,60,77,0.4);border-radius:var(--radius-md);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.3s}
+  .clear-chat-btn:hover{border-color:rgba(255,68,102,0.3);color:var(--accent3);background:rgba(255,68,102,0.05)}
+
+  .chat-container{flex:1;overflow-y:auto;padding:32px;display:flex;flex-direction:column;gap:24px;scroll-behavior:smooth}
+  .chat-container::-webkit-scrollbar{width:5px}
+  .chat-container::-webkit-scrollbar-track{background:transparent}
+  .chat-container::-webkit-scrollbar-thumb{background:rgba(53,60,77,0.4);border-radius:2.5px}
+  .chat-container::-webkit-scrollbar-thumb:hover{background:rgba(0,217,255,0.4)}
+
+  .welcome-section{text-align:center;padding:48px 24px;animation:slideUp 0.6s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .welcome-badge{width:72px;height:72px;margin:0 auto 24px;border-radius:var(--radius-lg);background:linear-gradient(135deg,rgba(0,217,255,0.15),rgba(165,119,255,0.15));border:2px solid rgba(0,217,255,0.35);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--accent);box-shadow:0 8px 24px rgba(0,217,255,0.12)}
+  .welcome-title{font-size:30px;font-weight:800;margin-bottom:10px;letter-spacing:-0.5px}
+  .welcome-title em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .welcome-subtitle{font-size:13px;color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.7;font-weight:500}
+
+  .suggestion-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:8px}
+  .chip-button{padding:9px 16px;background:rgba(33,40,57,0.4);border:1px solid rgba(53,60,77,0.4);border-radius:20px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all 0.3s}
+  .chip-button i{font-size:13px}
+  .chip-button:hover{border-color:rgba(0,217,255,0.3);color:var(--accent);background:rgba(0,217,255,0.05);transform:translateY(-1px)}
+
+  .message{display:flex;gap:14px;animation:slideUp 0.4s ease}
+  .msg-avatar{width:38px;height:38px;border-radius:var(--radius-md);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+  .msg-avatar.bot{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 6px 16px rgba(0,217,255,0.2)}
+  .msg-avatar.user{background:rgba(33,40,57,0.5);border:1px solid rgba(53,60,77,0.4);color:var(--muted)}
+  .msg-content{flex:1}
+  .msg-header{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+  .msg-bubble{background:rgba(33,40,57,0.3);border:1px solid rgba(53,60,77,0.3);border-radius:var(--radius-md);padding:14px 16px;font-size:13px;line-height:1.7;color:var(--text)}
+  .message.user .msg-bubble{background:rgba(0,217,255,0.08);border-color:rgba(0,217,255,0.15)}
+
+  .tag-group{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .tag{display:inline-block;padding:5px 11px;font-size:9px;font-weight:700;border-radius:var(--radius-sm);transition:all 0.3s}
+  .tag.success{background:rgba(30,203,127,0.12);color:var(--green);border:1px solid rgba(30,203,127,0.3)}
+  .tag.error{background:rgba(255,68,102,0.12);color:var(--accent3);border:1px solid rgba(255,68,102,0.3)}
+  .tag.info{background:rgba(0,217,255,0.12);color:var(--accent);border:1px solid rgba(0,217,255,0.3)}
+  .tag:hover{transform:translateY(-2px);box-shadow:0 3px 8px rgba(0,217,255,0.1)}
+
+  /* ========== INPUT AREA ========== */
+  .input-section{padding:20px 28px;border-top:1px solid rgba(53,60,77,0.2);background:linear-gradient(180deg,rgba(25,29,42,0.3),rgba(25,29,42,0.6));backdrop-filter:blur(8px)}
+  .input-box{background:rgba(33,40,57,0.4);border:1px solid rgba(53,60,77,0.4);border-radius:var(--radius-lg);display:flex;align-items:flex-end;gap:0;transition:all 0.3s}
+  .input-box:focus-within{border-color:var(--accent);background:rgba(33,40,57,0.6);box-shadow:0 0 16px rgba(0,217,255,0.12)}
+  .input-box textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-main);font-size:13px;padding:14px 16px;resize:none;line-height:1.5;min-height:44px;max-height:120px}
+  .input-box textarea::placeholder{color:var(--muted)}
+  .send-button{width:36px;height:36px;margin:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;transition:all 0.3s;box-shadow:0 4px 12px rgba(0,217,255,0.2)}
+  .send-button:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,217,255,0.3)}
+  .send-button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5}
+
+  .input-footer{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 0;font-size:9px;color:var(--muted);font-weight:600;letter-spacing:0.5px}
+  .input-tools{display:flex;gap:8px}
+  .tool-btn{background:transparent;border:1px solid rgba(53,60,77,0.4);border-radius:var(--radius-sm);padding:5px 10px;color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;transition:all 0.3s}
+  .tool-btn:hover{border-color:rgba(0,217,255,0.3);color:var(--accent);background:rgba(0,217,255,0.05)}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-group">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="logo-text">QA Copilot</div>
+        <div class="logo-tag">v2.7</div>
+      </div>
+    </div>
+
+    <div class="sidebar-status">
+      <div class="status-indicator"></div>
+      <div class="status-text">Neural Engine Active</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-title">Mode</div>
+      <div class="mode-buttons">
+        <button class="mode-btn active"><i class="ti ti-message-2"></i>Chat</button>
+        <button class="mode-btn"><i class="ti ti-bug"></i>Debug</button>
+        <button class="mode-btn"><i class="ti ti-code"></i>Generate</button>
+        <button class="mode-btn"><i class="ti ti-ticket"></i>JIRA</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-title">Search Source</div>
+      <select class="select-box">
+        <option>All Sources</option>
+        <option>JIRA Only</option>
+        <option>Test Cases</option>
+        <option>Codebase</option>
+      </select>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-title">Result Depth</div>
+      <div class="slider-container">
+        <div class="slider-label-row">
+          <span class="slider-label">Search Depth</span>
+          <span class="slider-value" id="depth-val">5</span>
+        </div>
+        <input type="range" min="1" max="20" value="5" oninput="document.getElementById('depth-val').textContent=this.value">
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-number cyan">1,240</div>
+        <div class="metric-label">Test Cases</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-number green">94%</div>
+        <div class="metric-label">Pass Rate</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-number purple">38</div>
+        <div class="metric-label">JIRA Linked</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-number red">6</div>
+        <div class="metric-label">Failures</div>
+      </div>
+    </div>
+
+    <div class="upload-box">
+      <i class="ti ti-cloud-upload"></i>
+      <p>Drop CSV here</p>
+      <span>200MB max · CSV format</span>
+    </div>
+
+    <button class="ingest-button">
+      <i class="ti ti-database-import"></i>
+      Run Data Ingestion
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-area">
+    <div class="top-bar">
+      <div class="top-left">
+        <div>
+          <div class="page-heading">QA <span>Copilot</span></div>
+          <div class="breadcrumb-text">Workspace · Chat Mode · All Sources</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="action-btn" title="Search"><i class="ti ti-search"></i></button>
+        <button class="action-btn" title="Settings"><i class="ti ti-settings"></i></button>
+        <button class="clear-chat-btn"><i class="ti ti-trash"></i>Clear Chat</button>
+      </div>
+    </div>
+
+    <div class="chat-container" id="chat-window">
+      <div class="welcome-section">
+        <div class="welcome-badge"><i class="ti ti-shield-check"></i></div>
+        <h1 class="welcome-title">Hello, QA <em>Engineer</em></h1>
+        <p class="welcome-subtitle">Search test cases, generate automation code, map JIRA tickets, and debug failures—all in one intelligent platform.</p>
+        <div class="suggestion-chips">
+          <button class="chip-button"><i class="ti ti-test-pipe"></i>Generate test cases</button>
+          <button class="chip-button"><i class="ti ti-bug"></i>Debug a failure</button>
+          <button class="chip-button"><i class="ti ti-ticket"></i>Map to JIRA</button>
+          <button class="chip-button"><i class="ti ti-code"></i>Write automation</button>
+          <button class="chip-button"><i class="ti ti-chart-bar"></i>Coverage report</button>
+        </div>
+      </div>
+
+      <div class="message user">
+        <div class="msg-avatar user"><i class="ti ti-user"></i></div>
+        <div class="msg-content">
+          <div class="msg-header">You</div>
+          <div class="msg-bubble">Find all test cases related to login and show me which ones failed last run.</div>
+        </div>
+      </div>
+
+      <div class="message bot">
+        <div class="msg-avatar bot">QA</div>
+        <div class="msg-content">
+          <div class="msg-header">Copilot · 0.3s</div>
+          <div class="msg-bubble">
+            Found <strong style="color:var(--accent)">12 test cases</strong> matching "login" across 3 modules.<br><br>
+            <strong>Last Run Results:</strong><br>
+            ✦ TC-001 · Login valid credentials → <span style="color:var(--green)">PASS</span><br>
+            ✦ TC-002 · Login invalid password → <span style="color:var(--green)">PASS</span><br>
+            ✦ TC-007 · SSO token expiry → <span style="color:var(--accent3)">FAIL</span> (timeout at step 4)<br>
+            ✦ TC-009 · MFA bypass attempt → <span style="color:var(--accent3)">FAIL</span> (assertion mismatch)
+          </div>
+          <div class="tag-group">
+            <span class="tag success">10 PASSED</span>
+            <span class="tag error">2 FAILED</span>
+            <span class="tag info">JIRA: QA-441, QA-388</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <div class="input-box">
+        <textarea id="message-input" placeholder="Ask about test cases, code, or JIRA tickets..." onkeydown="handleEnter(event)" oninput="autoExpand(this)"></textarea>
+        <button class="send-button" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+      <div class="input-footer">
+        <span>SHIFT+ENTER for new line • ENTER to send</span>
+        <div class="input-tools">
+          <button class="tool-btn"><i class="ti ti-paperclip"></i>ATTACH</button>
+          <button class="tool-btn"><i class="ti ti-microphone"></i>VOICE</button>
+          <button class="tool-btn"><i class="ti ti-filter"></i>FILTER</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function autoExpand(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px'}
+function handleEnter(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}}
+function sendMessage(){
+  const input=document.getElementById('message-input');
+  const text=input.value.trim();
+  if(!text)return;
+  const chat=document.getElementById('chat-window');
+  const userMsg=document.createElement('div');
+  userMsg.className='message user';
+  userMsg.innerHTML='<div class="msg-avatar user"><i class="ti ti-user"></i></div><div class="msg-content"><div class="msg-header">You</div><div class="msg-bubble">'+text.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div>';
+  chat.appendChild(userMsg);
+  input.value='';input.style.height='auto';
+  chat.scrollTop=chat.scrollHeight;
+  setTimeout(function(){
+    const botMsg=document.createElement('div');
+    botMsg.className='message bot';
+    botMsg.innerHTML='<div class="msg-avatar bot">QA</div><div class="msg-content"><div class="msg-header">Copilot · thinking...</div><div class="msg-bubble" style="color:var(--muted);font-style:italic">Analyzing query across connected sources...</div></div>';
+    chat.appendChild(botMsg);chat.scrollTop=chat.scrollHeight;
+  },400);
+}
+document.querySelectorAll('.mode-btn').forEach(b=>{b.addEventListener('click',function(){document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')})});
+document.querySelectorAll('.chip-button').forEach(c=>{c.addEventListener('click',function(){document.getElementById('message-input').value=c.textContent.trim();document.getElementById('message-input').focus()})});
+</script>
+
+</body>
+</html>

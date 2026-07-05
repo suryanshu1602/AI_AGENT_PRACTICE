@@ -1,0 +1,24 @@
+﻿# Environment
+.env
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# ChromaDB
+chroma_db/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# IDE/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+streamlit.log

@@ -1,0 +1,25 @@
+﻿# Environment
+.env
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# ChromaDB
+chroma_db/
+
+# IDE/OS
+.commandcode/
+.sixth/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Old repo structure
+AI-Tools-_Practice/
+write_readme.py
