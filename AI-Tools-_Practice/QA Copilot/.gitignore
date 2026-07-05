@@ -1,24 +1,24 @@
-# Environment
+﻿# Environment
 .env
 
 # Dependencies
 node_modules/
 package-lock.json
 
+# ChromaDB
+chroma_db/
+
 # Python
 .venv/
 __pycache__/
 *.pyc
 
-# ChromaDB
-chroma_db/
-
 # IDE/OS
-.commandcode/
-.sixth/
 .vscode/
+.idea/
 .DS_Store
 Thumbs.db
 
-# Old repo structure
-write_readme.py
+# Logs
+*.log
+streamlit.log

@@ -1,0 +1,11 @@
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.zip
+tmp.txt
+debug.txt
+.commandcode/
+.playwright-mcp/
+.vscode/

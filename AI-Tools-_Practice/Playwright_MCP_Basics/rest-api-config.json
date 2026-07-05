@@ -1,0 +1,119 @@
+{
+  "server": {
+    "name": "jsonplaceholder-api",
+    "version": "1.0.0",
+    "description": "JSONPlaceholder REST API — a free fake API for testing and prototyping. Provides posts, comments, users, todos, and photos."
+  },
+  "api": {
+    "baseUrl": "https://jsonplaceholder.typicode.com",
+    "timeout": 15000,
+    "headers": {
+      "Accept": "application/json"
+    }
+  },
+  "tools": [
+    {
+      "name": "api_get_posts",
+      "description": "Fetch all posts or a single post by ID",
+      "method": "GET",
+      "path": "/posts/{id?}",
+      "pathParams": {
+        "id": "{args.id}"
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Optional post ID. Omit to get all posts."
+          }
+        }
+      }
+    },
+    {
+      "name": "api_get_post_comments",
+      "description": "Fetch comments for a specific post by post ID",
+      "method": "GET",
+      "path": "/posts/{postId}/comments",
+      "pathParams": {
+        "postId": "{args.postId}"
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "integer",
+            "description": "The post ID to get comments for"
+          }
+        },
+        "required": ["postId"]
+      }
+    },
+    {
+      "name": "api_create_post",
+      "description": "Create a new post",
+      "method": "POST",
+      "path": "/posts",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "{args.body}",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "The post data as a JSON object with title, body, and userId fields",
+            "properties": {
+              "title": { "type": "string" },
+              "body": { "type": "string" },
+              "userId": { "type": "integer" }
+            }
+          }
+        },
+        "required": ["body"]
+      }
+    },
+    {
+      "name": "api_get_users",
+      "description": "Fetch all users or a single user by ID",
+      "method": "GET",
+      "path": "/users/{id?}",
+      "pathParams": {
+        "id": "{args.id}"
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Optional user ID. Omit to get all users."
+          }
+        }
+      }
+    },
+    {
+      "name": "api_get_todos",
+      "description": "Fetch todos, optionally filtered by userId or completed status",
+      "method": "GET",
+      "path": "/todos",
+      "queryParams": {
+        "userId": "{args.userId}",
+        "completed": "{args.completed}"
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "Optional user ID to filter by"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "Optional filter by completion status"
+          }
+        }
+      }
+    }
+  ]
+}

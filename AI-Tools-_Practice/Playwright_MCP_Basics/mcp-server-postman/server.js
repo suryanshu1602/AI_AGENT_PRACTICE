@@ -1,0 +1,132 @@
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import express from 'express';
+import cors from 'cors';
+import { randomUUID } from 'node:crypto';
+import * as fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+import 'dotenv/config';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+async function loadToolFiles(dir) {
+const entries = await fs.readdir(dir, { withFileTypes: true });
+let toolModules = [];
+for (const entry of entries) {
+const fullPath = path.join(dir, entry.name);
+if (entry.isDirectory()) {
+// Recursively load from subfolders
+const subModules = await loadToolFiles(fullPath);
+toolModules = toolModules.concat(subModules);
+} else if (entry.isFile() && entry.name.endsWith('.js')) {
+const toolUrl = pathToFileURL(fullPath).href;
+const toolModule = await import(toolUrl);
+toolModules.push(toolModule);
+}
+}
+return toolModules;
+}
+
+async function createAndConfigureServer() {
+const server = new McpServer({ name: 'jsonplaceholder-api', version: '1.0.0' , capabilities: {tools: { listChanged: true }
+}});
+const toolsDir = path.join(__dirname, 'tools');
+const toolModules = await loadToolFiles(toolsDir);
+for (const toolModule of toolModules) {
+const isZodSchema = Object.keys(toolModule.inputSchema).length > 0 || false;
+const toolOptions = {
+title: toolModule.title,
+description: toolModule.description,
+};
+if (isZodSchema) {
+toolOptions.inputSchema = toolModule.inputSchema;
+}
+server.registerTool(
+toolModule.name,
+toolOptions,
+toolModule.handler
+);
+}
+return server;
+}
+
+async function main() {
+const transportMode = 'stdio';
+console.log(`Starting MCP server in '${transportMode}' mode.`);
+
+if (transportMode === 'http-session') {
+// --- Stateful HTTP Transport with Sessions ---
+const app = express();
+app.use(express.json());
+app.use(cors({ origin: '*', exposedHeaders: ['Mcp-Session-Id'], allowedHeaders: ['Content-Type', 'mcp-session-id'] }));
+const transports = {};
+app.post('/mcp', async (req, res) => {
+const sessionId = req.headers['mcp-session-id'];
+let transport;
+if (sessionId && transports[sessionId]) {
+transport = transports[sessionId];
+} else if (!sessionId && isInitializeRequest(req.body)) {
+const server = await createAndConfigureServer();
+transport = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID(), onsessioninitialized: (id) => {
+transports[id] = transport; } });
+transport.onclose = () => { if (transport.sessionId) delete transports[transport.sessionId]; };
+await server.connect(transport);
+} else {
+return res.status(400).json({ jsonrpc: '2.0', error: { code: -32000, message: 'Bad Request' } });
+}
+await transport.handleRequest(req, res, req.body);
+});
+const sessionHandler = async (req, res) => {
+const sessionId = req.headers['mcp-session-id'];
+if (!sessionId || !transports[sessionId]) return res.status(400).send('Invalid session ID');
+await transports[sessionId].handleRequest(req, res);
+};
+app.get('/mcp', sessionHandler);
+app.delete('/mcp', sessionHandler);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(` Stateful MCP Server running on http://localhost:${PORT}/mcp`));
+
+} else if (transportMode === 'http-stateless') {
+// --- Stateless HTTP Transport (No Sessions) ---
+const app = express();
+app.use(express.json());
+app.use(cors({ origin: '*' }));
+const server = await createAndConfigureServer();
+const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+await server.connect(transport);
+app.post('/mcp', async (req, res) => {
+try {
+await transport.handleRequest(req, res, req.body);
+} catch (err) {
+console.error('Error in POST /mcp:', err);
+res.status(500).json({ error: 'Internal Server Error' });
+}
+});
+app.get('/mcp', async (req, res) => {
+try {
+await transport.handleRequest(req, res, req.body);
+} catch (err) {
+console.error('Error in GET /mcp:', err);
+res.status(500).json({ error: 'Internal Server Error' });
+}
+});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Stateless MCP Server running on http://localhost:${PORT}/mcp`));
+
+} else {
+// --- Stdio Transport (Default) ---
+const server = await createAndConfigureServer();
+const transport = new StdioServerTransport();
+await server.connect(transport);
+console.log(` MCP Server running on stdio.`);
+}
+}
+
+main().catch(err => {
+console.error('Failed to start server:', err);
+process.exit(1);
+});
